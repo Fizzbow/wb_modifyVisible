@@ -1,5 +1,9 @@
 ## Usage
 
+- git clone
+
+- config .env
+
 - install
 
 ```
