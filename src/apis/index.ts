@@ -32,7 +32,6 @@ const $https = axios.create({
 
 $https.interceptors.request.use(
   (config) => {
-    console.log("configgg", config);
     return config;
   },
   (err) => {

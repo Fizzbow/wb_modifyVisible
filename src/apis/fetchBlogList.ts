@@ -25,7 +25,7 @@ export interface Blogs {
   status_visible: number;
 }
 
-interface BlogList {
+export interface BlogList {
   visible: {
     type: number;
     list_id: number;
@@ -34,23 +34,24 @@ interface BlogList {
 }
 
 const fetchBlogList = async (page: number, since_id: string | null) => {
-  // let feature: visibleState = "2";
-
-  // if (process.argv.length > 1) {
-  //   feature = process.argv[2] as visibleState;
-  // }
-
+  console.log(`🐱 current page ${page}`);
+  let currentPage = page;
   if (!process.env.UID) {
     return;
   }
 
   const params: BlogListParams = {
     uid: process.env.UID,
-    page,
+    page: currentPage,
     feature: "0",
     since_id,
   };
-  return await $https.get<Blogs>("/ajax/statuses/mymblog", { params });
+  return await $https.get<{ data: Blogs; ok: number }>(
+    "/ajax/statuses/mymblog",
+    {
+      params,
+    }
+  );
 };
 
 export default fetchBlogList;
