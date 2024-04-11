@@ -40,7 +40,8 @@ const fetchAllList = (page: number, since_id: string | null) => {
       allBlogList.forEach((blog) => {
         if (
           blog.visible.type === modifyVisible ||
-          String(blog.share_repost_type) === "0"
+          String(blog.share_repost_type) === "0" ||
+          (modifyVisible == "2" && blog.visible.type == "6")
         ) {
           return;
         }
