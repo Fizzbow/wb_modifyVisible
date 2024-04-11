@@ -2,7 +2,6 @@ import axios from "axios";
 import dotenv from "dotenv";
 
 dotenv.config();
-console.log("envvvvv", process.env);
 
 const getStrBetween = (startStr: string, endStr: string, allStr?: string) => {
   if (!allStr) {

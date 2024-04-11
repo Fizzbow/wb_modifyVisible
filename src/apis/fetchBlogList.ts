@@ -7,9 +7,9 @@ dotenv.config();
 type visibleState = "0" | "1" | "6";
 
 export const visibleCNMap: Record<visibleState, string> = {
-  0: "公开",
-  1: "仅自己可见",
-  6: "好友圈",
+  "0": "公开",
+  "1": "仅自己可见",
+  "6": "好友圈",
 };
 
 export interface BlogListParams {
@@ -27,14 +27,15 @@ export interface Blogs {
 
 export interface BlogList {
   visible: {
-    type: number;
+    type: visibleState;
     list_id: number;
   };
   idstr: string;
+  share_repost_type: number;
 }
 
 const fetchBlogList = async (page: number, since_id: string | null) => {
-  console.log(`🐱 current page ${page}`);
+  console.log(`🐱 ...fetch data.... current page ${page}`);
   let currentPage = page;
   if (!process.env.UID) {
     return;
