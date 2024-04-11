@@ -2,7 +2,7 @@
 
 - git clone
 
-- config .env
+- config .env file
 
 - install
 
