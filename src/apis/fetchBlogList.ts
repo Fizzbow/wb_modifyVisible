@@ -1,6 +1,7 @@
 import $https from ".";
 
 import dotenv from "dotenv";
+import chalk from "chalk";
 
 dotenv.config();
 
@@ -35,7 +36,7 @@ export interface BlogList {
 }
 
 const fetchBlogList = async (page: number, since_id: string | null) => {
-  console.log(`🐱 ...fetch data.... current page ${page}`);
+  console.log(chalk.yellow.bold(` ...fetch data.... current page ${page}`));
   let currentPage = page;
   if (!process.env.UID) {
     return;

@@ -1,5 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
+
 import fetchBlogList, { BlogList, visibleCNMap } from "./apis/fetchBlogList";
 import modifyBlogVisible, { ModifyVisible } from "./apis/modifyBlogVisible";
 
@@ -7,11 +8,12 @@ dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
+const chalk = require("chalk");
+const log = console.log;
 
 let modifyVisible: ModifyVisible = "2";
 
 if (process.argv.length === 3) {
-  console.log("process.argv", process.argv.length);
   modifyVisible = process.argv[2] as ModifyVisible;
 }
 
@@ -20,7 +22,11 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.listen(port, () => {
-  console.log(`[server]: Server is running at http://localhost:${port}`);
+  log(
+    chalk.bgGreen.black.bold(
+      ` [server]: Server is running at http://localhost:${port}`
+    )
+  );
 });
 
 const allBlogList: Array<BlogList> = [];
@@ -34,7 +40,10 @@ const fetchAllList = (page: number, since_id: string | null) => {
     since_id = blogs.since_id;
 
     if (!blogs?.list.length) {
-      console.log(`finished | 一共有${allBlogList.length}条数据`);
+      log(
+        "🐳FETCH ALL DATA   |" +
+          chalk.bgBlue.black.bold(`total blogs: ${allBlogList.length} `)
+      );
       modifyAllBlogVisible(0);
       return;
     }
@@ -49,7 +58,10 @@ const fetchAllList = (page: number, since_id: string | null) => {
 
 function modifyAllBlogVisible(index: number) {
   if (index >= allBlogList.length) {
-    console.log(`🐶 modify blog visible finished ${index}`);
+    log(
+      "😼DONE      |    " +
+        chalk.bgYellow.black.bold(" modify blog visible finished ")
+    );
     return;
   }
 
@@ -64,32 +76,26 @@ function modifyAllBlogVisible(index: number) {
     return;
   }
 
-  setTimeout(() => {
-    console.log(
-      "fetch modifyBlogVisible",
-      modifyVisible,
-      currBlog.visible.type
-    );
-    modifyAllBlogVisible(++index);
-  }, 1000);
-
-  // modifyBlogVisible(currBlog.idstr, modifyVisible)
-  //   .then((res) => {
-  //     if (res.data.ok == 1) {
-  //       console.log(
-  //         `已将微博${currBlog.idstr}的可见范围设置为${
-  //           visibleCNMap[res.data.statuses[0].visible.type]
-  //         }可见`
-  //       );
-
-  //       setTimeout(() => {
-  //         modifyAllBlogVisible(++index);
-  //       }, 1000);
-  //     }
-  //   })
-  //   .catch((err) => {
-  //     throw new Error(err);
-  //   });
+  modifyBlogVisible(currBlog.idstr, modifyVisible)
+    .then((res) => {
+      if (res.data.ok == 1) {
+        log(
+          chalk.magenta.bold(
+            `🎈          |    已将微博${currBlog.idstr}的可见范围设置为${
+              visibleCNMap[res.data.statuses[0].visible.type]
+            }可见`
+          )
+        );
+      }
+    })
+    .catch((err) => {
+      throw new Error(err);
+    })
+    .finally(() => {
+      setTimeout(() => {
+        modifyAllBlogVisible(++index);
+      }, 1000);
+    });
 }
 
 fetchAllList(1, null);
