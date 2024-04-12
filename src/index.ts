@@ -10,9 +10,8 @@ const port = process.env.PORT || 3000;
 
 let modifyVisible: ModifyVisible = "2";
 
-console.log("argvargv", process.argv);
-
-if (process.argv.length === 2) {
+if (process.argv.length === 3) {
+  console.log("process.argv", process.argv.length);
   modifyVisible = process.argv[2] as ModifyVisible;
 }
 
@@ -35,31 +34,8 @@ const fetchAllList = (page: number, since_id: string | null) => {
     since_id = blogs.since_id;
 
     if (!blogs?.list.length) {
-      console.log(`finished fetch all data`);
-
-      allBlogList.forEach((blog) => {
-        if (
-          blog.visible.type === modifyVisible ||
-          String(blog.share_repost_type) === "0" ||
-          (modifyVisible == "2" && blog.visible.type == "6")
-        ) {
-          return;
-        }
-
-        modifyBlogVisible(blog.idstr, modifyVisible)
-          .then((res) => {
-            if (String(res.data.ok) === "1") {
-              console.log(
-                `已将微博${blog.idstr}的可见范围设置为${
-                  visibleCNMap[res.data.statuses[0].visible.type]
-                }可见`
-              );
-            }
-          })
-          .catch((err) => {
-            throw new Error(err);
-          });
-      });
+      console.log(`finished | 一共有${allBlogList.length}条数据`);
+      modifyAllBlogVisible(0);
       return;
     }
 
@@ -71,4 +47,49 @@ const fetchAllList = (page: number, since_id: string | null) => {
   });
 };
 
-fetchAllList(0, null);
+function modifyAllBlogVisible(index: number) {
+  if (index >= allBlogList.length) {
+    console.log(`🐶 modify blog visible finished ${index}`);
+    return;
+  }
+
+  const currBlog = allBlogList[index];
+
+  if (
+    currBlog.visible.type == modifyVisible ||
+    String(currBlog.share_repost_type) == "0" ||
+    (modifyVisible == "2" && currBlog.visible.type == "6")
+  ) {
+    modifyAllBlogVisible(++index);
+    return;
+  }
+
+  setTimeout(() => {
+    console.log(
+      "fetch modifyBlogVisible",
+      modifyVisible,
+      currBlog.visible.type
+    );
+    modifyAllBlogVisible(++index);
+  }, 1000);
+
+  // modifyBlogVisible(currBlog.idstr, modifyVisible)
+  //   .then((res) => {
+  //     if (res.data.ok == 1) {
+  //       console.log(
+  //         `已将微博${currBlog.idstr}的可见范围设置为${
+  //           visibleCNMap[res.data.statuses[0].visible.type]
+  //         }可见`
+  //       );
+
+  //       setTimeout(() => {
+  //         modifyAllBlogVisible(++index);
+  //       }, 1000);
+  //     }
+  //   })
+  //   .catch((err) => {
+  //     throw new Error(err);
+  //   });
+}
+
+fetchAllList(1, null);
